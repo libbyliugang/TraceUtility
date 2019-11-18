@@ -224,7 +224,7 @@ static void DumpActivityMonitor(XRInstrument* instrument, XRRun* run, NSMutableA
                         
                         //  当需要打印当前数据项目时，才真正执行输出操作，输出方式比较简单直接将每列的数据打印出来即可
                         if ([isNeedPrint isEqual: @(YES)]) {
-                            NSPrintf(@"(TRACE),ActivityMonitor");
+                            NSPrintf(@"(TRACE),%@,%@", instrument.type.uuid, context.label);
                             for (NSString* item in cols) {
                                 NSPrintf(@",%@", item);
                             }
@@ -392,24 +392,25 @@ int main(int argc, const char * argv[]) {
 
         // Open a trace document.
         NSString *tracePath = [OptionsTraceFiles objectAtIndex:0];
+        NSFprintln(stderr, @"开始加载 trace 文件: %@\n", tracePath);
         NSError *error = nil;
         PFTTraceDocument *document = [[PFTTraceDocument alloc]initWithContentsOfURL:[NSURL fileURLWithPath:tracePath] ofType:@"com.apple.instruments.trace" error:&error];
         if (error) {
-            TUPrint(@"Error: %@\n", error);
+            NSFprintln(stderr, @"加载 trace 文件失败: %@\n", error);
             return 1;
         }
-        TUPrint(@"Trace: %@\n", tracePath);
+        NSFprintln(stderr, @"加载 trace 文件成功: %@\n", tracePath);
 
         // List some useful metadata of the document.
         XRDevice *device = document.targetDevice;
-        TUPrint(@"Device: %@ (%@ %@ %@)\n", device.deviceDisplayName, device.productType, device.productVersion, device.buildVersion);
-        PFTProcess *process = document.defaultProcess;
-        TUPrint(@"Process: %@ (%@)\n", process.displayName, process.bundleIdentifier);
+        NSFprintln(stderr, @"Device: %@ (%@ %@ %@)\n", device.deviceDisplayName, device.productType, device.productVersion, device.buildVersion);
+        //PFTProcess *process = document.defaultProcess;
+        //NSFprintln(stderr, @"Process: %@ (%@)\n", process.displayName, process.bundleIdentifier);
 
         // Each trace document consists of data from several different instruments.
         XRTrace *trace = document.trace;
         for (XRInstrument *instrument in trace.allInstrumentsList.allInstruments) {
-            TUPrint(@"\nInstrument: %@ (%@)\n", instrument.type.name, instrument.type.uuid);
+            NSFprintln(stderr, @"\nInstrument: %@ (%@)\n", instrument.type.name, instrument.type.uuid);
 
             // Each instrument can have multiple runs.
             NSArray<XRRun *> *runs = instrument.allRuns;
