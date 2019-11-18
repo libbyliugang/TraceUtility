@@ -1,9 +1,9 @@
 //
 //  InstrumentsPrivateHeader.h
-//  TraceUtility
 //
-//  Created by Qusic on 8/9/15.
-//  Copyright (c) 2015 Qusic. All rights reserved.
+//
+//  Created by luolijun on 7/9/15.
+//  Copyright (c) 2019 luolijun. All rights reserved.
 //
 
 #import <AppKit/AppKit.h>
